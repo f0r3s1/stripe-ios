@@ -294,6 +294,10 @@ NSString *stringIfHasContentsElseNil(NSString *string);
 
 #pragma mark STPAPIResponseDecodable
 
++ (NSString *)object {
+    return nil;
+}
+
 + (NSArray *)requiredFields {
     return @[];
 }

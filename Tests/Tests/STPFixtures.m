@@ -45,8 +45,7 @@
     customer[@"default_source"] = card1[@"id"];
     customer[@"sources"] = sources;
 
-    STPCustomerDeserializer *deserializer = [[STPCustomerDeserializer alloc] initWithJSONResponse:customer];
-    return deserializer.customer;
+    return [STPCustomer decodedObjectFromAPIResponse:customer];
 }
 
 + (STPSource *)iDEALSource {
@@ -59,20 +58,34 @@
     return config;
 }
 
-+ (id<STPBackendAPIAdapter>)staticAPIAdapter {
-    return [self staticAPIAdapterWithCustomer:[self customerWithSingleCardTokenSource]];
++ (STPEphemeralKey *)ephemeralKey {
+    NSMutableDictionary *response = [[STPTestUtils jsonNamed:@"EphemeralKey"] mutableCopy];
+    NSTimeInterval interval = 100;
+    response[@"expires"] = @([[NSDate dateWithTimeIntervalSinceNow:interval] timeIntervalSince1970]);
+    return [STPEphemeralKey decodedObjectFromAPIResponse:response];
 }
 
-+ (id<STPBackendAPIAdapter>)staticAPIAdapterWithCustomer:(STPCustomer *)customer {
-    id mockAPIAdapter = OCMProtocolMock(@protocol(STPBackendAPIAdapter));
-    OCMStub([mockAPIAdapter retrieveCustomer:[OCMArg any]]).andDo(^(NSInvocation *invocation){
++ (STPEphemeralKey *)expiringEphemeralKey {
+    NSMutableDictionary *response = [[STPTestUtils jsonNamed:@"EphemeralKey"] mutableCopy];
+    NSTimeInterval interval = 10;
+    response[@"expires"] = @([[NSDate dateWithTimeIntervalSinceNow:interval] timeIntervalSince1970]);
+    return [STPEphemeralKey decodedObjectFromAPIResponse:response];
+}
+
++ (STPCustomerContext *)staticCustomerContext {
+    return [self staticCustomerContextWithCustomer:[self customerWithSingleCardTokenSource]];
+}
+
++ (STPCustomerContext *)staticCustomerContextWithCustomer:(STPCustomer *)customer {
+    id mock = OCMClassMock([STPCustomerContext class]);
+    OCMStub([mock retrieveCustomer:[OCMArg any]]).andDo(^(NSInvocation *invocation){
         STPCustomerCompletionBlock completion;
         [invocation getArgument:&completion atIndex:2];
         completion(customer, nil);
     });
-    OCMStub([mockAPIAdapter selectDefaultCustomerSource:[OCMArg any] completion:[OCMArg invokeBlock]]);
-    OCMStub([mockAPIAdapter attachSourceToCustomer:[OCMArg any] completion:[OCMArg invokeBlock]]);
-    return mockAPIAdapter;
+    OCMStub([mock selectDefaultCustomerSource:[OCMArg any] completion:[OCMArg invokeBlock]]);
+    OCMStub([mock attachSourceToCustomer:[OCMArg any] completion:[OCMArg invokeBlock]]);
+    return mock;
 }
 
 + (PKPayment *)applePayPayment {

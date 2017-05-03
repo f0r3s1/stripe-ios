@@ -11,6 +11,11 @@
 @protocol STPAPIResponseDecodable <NSObject>
 
 /**
+ A string representing the object's type. May be nil.
+ */
++ (nullable NSString *)object;
+
+/**
  * These fields are required to be present in the API response. If any of them are nil, `decodedObjectFromAPIResponse` should also return nil.
  */
 + (nonnull NSArray *)requiredFields;

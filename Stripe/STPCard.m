@@ -151,6 +151,10 @@
 }
 
 #pragma mark STPAPIResponseDecodable
++ (NSString *)object {
+    return @"card";
+}
+
 + (NSArray *)requiredFields {
     return @[@"id", @"last4", @"brand", @"exp_month", @"exp_year"];
 }

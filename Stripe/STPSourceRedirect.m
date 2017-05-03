@@ -35,6 +35,10 @@
 
 #pragma mark STPAPIResponseDecodable
 
++ (NSString *)object {
+    return nil;
+}
+
 + (NSArray *)requiredFields {
     return @[@"return_url", @"status", @"url"];
 }

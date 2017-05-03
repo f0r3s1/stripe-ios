@@ -39,6 +39,10 @@
 
 @implementation STPSource
 
++ (NSString *)object {
+    return @"source";
+}
+
 + (NSDictionary<NSString *,NSNumber *>*)stringToType {
     return @{
              @"bancontact": @(STPSourceTypeBancontact),

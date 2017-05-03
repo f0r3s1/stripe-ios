@@ -56,6 +56,10 @@
 
 #pragma mark STPAPIResponseDecodable
 
++ (NSString *)object {
+    return @"bank_account";
+}
+
 + (NSArray *)requiredFields {
     return @[
              @"id",

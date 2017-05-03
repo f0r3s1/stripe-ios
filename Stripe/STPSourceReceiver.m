@@ -23,6 +23,10 @@
 
 #pragma mark STPAPIResponseDecodable
 
++ (NSString *)object {
+    return nil;
+}
+
 + (NSArray *)requiredFields {
     return @[@"address"];
 }

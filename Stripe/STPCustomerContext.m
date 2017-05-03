@@ -1,0 +1,154 @@
+//
+//  STPCustomerContext.m
+//  Stripe
+//
+//  Created by Ben Guo on 5/2/17.
+//  Copyright © 2017 Stripe, Inc. All rights reserved.
+//
+
+#import "STPCustomerContext.h"
+
+#import "NSError+STPCustomerContext.h"
+#import "STPAPIClient+Private.h"
+#import "STPCustomer.h"
+#import "STPEphemeralKey.h"
+#import "STPEphemeralKeyManager.h"
+#import "STPWeakStrongMacros.h"
+
+static NSTimeInterval const DefaultCachedCustomerMaxAge = 60;
+
+@interface STPCustomerContext ()
+
+@property (nonatomic) STPAPIClient *apiClient;
+@property (nonatomic) STPCustomer *customer;
+@property (nonatomic) NSDate *customerRetrievedDate;
+@property (nonatomic) STPEphemeralKeyManager *keyManager;
+
+@end
+
+@implementation STPCustomerContext
+
++ (instancetype)sharedInstance {
+    static STPCustomerContext *sharedInstance;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [self new];
+    });
+    return sharedInstance;
+}
+
+- (instancetype)initWithKeyProvider:(nonnull id<STPEphemeralKeyProvider>)keyProvider {
+    STPEphemeralKeyManager *keyManager = [[STPEphemeralKeyManager alloc] initWithKeyProvider:keyProvider
+                                                                                  apiVersion:[STPAPIClient apiVersion]];
+    return [self initWithKeyManager:keyManager];
+}
+
+- (instancetype)initWithKeyManager:(STPEphemeralKeyManager *)keyManager {
+    self = [super init];
+    if (self) {
+        _cachedCustomerMaxAge = DefaultCachedCustomerMaxAge;
+        self.keyManager = keyManager;
+    }
+    return self;
+}
+
+- (void)setKeyProvider:(id<STPEphemeralKeyProvider>)keyProvider {
+    self.keyManager = [[STPEphemeralKeyManager alloc] initWithKeyProvider:keyProvider
+                                                               apiVersion:[STPAPIClient apiVersion]];
+}
+
+- (void)setKeyManager:(STPEphemeralKeyManager *)keyManager {
+    _keyManager = keyManager;
+    [self retrieveCustomer:nil];
+}
+
+- (void)setCustomer:(STPCustomer *)customer {
+    _customer = customer;
+    _customerRetrievedDate = [NSDate date];
+}
+
+- (BOOL)shouldUseCachedCustomer {
+    if (!self.customer || !self.customerRetrievedDate) {
+        return NO;
+    }
+    NSDate *now = [NSDate date];
+    return [now timeIntervalSinceDate:self.customerRetrievedDate] < self.cachedCustomerMaxAge;
+}
+
+- (void)retrieveCustomer:(STPCustomerCompletionBlock)completion {
+    if ([self shouldUseCachedCustomer]) {
+        if (completion) {
+            completion(self.customer, nil);
+        }
+        return;
+    }
+    if (!self.keyManager) {
+        completion(nil, [NSError stp_customerContextMissingKeyProviderError]);
+        return;
+    }
+    [self.keyManager getCustomerKey:^(STPEphemeralKey *ephemeralKey, NSError *retrieveKeyError) {
+        if (retrieveKeyError) {
+            if (completion) {
+                completion(nil, retrieveKeyError);
+            }
+            return;
+        }
+        [STPAPIClient retrieveCustomerUsingKey:ephemeralKey completion:^(STPCustomer *customer, NSError *error) {
+            if (customer) {
+                self.customer = customer;
+            }
+            if (completion) {
+                completion(customer, error);
+            }
+        }];
+    }];
+}
+
+- (void)attachSourceToCustomer:(id<STPSourceProtocol>)source completion:(STPErrorBlock)completion {
+    if (!self.keyManager) {
+        completion([NSError stp_customerContextMissingKeyProviderError]);
+        return;
+    }
+    [self.keyManager getCustomerKey:^(STPEphemeralKey *ephemeralKey, NSError *retrieveKeyError) {
+        if (retrieveKeyError) {
+            if (completion) {
+                completion(retrieveKeyError);
+            }
+            return;
+        }
+        [STPAPIClient addSource:source.stripeID
+             toCustomerUsingKey:ephemeralKey
+                     completion:^(__unused id<STPSourceProtocol> object, NSError *error) {
+                         if (completion) {
+                             completion(error);
+                         }
+                     }];
+    }];
+}
+
+- (void)selectDefaultCustomerSource:(id<STPSourceProtocol>)source completion:(STPErrorBlock)completion {
+    if (!self.keyManager) {
+        completion([NSError stp_customerContextMissingKeyProviderError]);
+        return;
+    }
+    [self.keyManager getCustomerKey:^(STPEphemeralKey *ephemeralKey, NSError *retrieveKeyError) {
+        if (retrieveKeyError) {
+            if (completion) {
+                completion(retrieveKeyError);
+            }
+            return;
+        }
+        [STPAPIClient updateCustomerWithParameters:@{@"default_source": source.stripeID}
+                                          usingKey:ephemeralKey
+                                        completion:^(STPCustomer *customer, NSError *error) {
+                                            if (customer) {
+                                                self.customer = customer;
+                                            }
+                                            if (completion) {
+                                                completion(error);
+                                            }
+                                        }];
+    }];
+}
+
+@end

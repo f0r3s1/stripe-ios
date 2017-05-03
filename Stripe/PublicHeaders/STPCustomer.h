@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  *  An `STPCustomer` represents a deserialized Customer object from the Stripe API. You can use `STPCustomerDeserializer` to convert a JSON response from the Stripe API into an `STPCustomer`.
+ *  TODO: deprecate
  */
 @interface STPCustomer : NSObject <STPAPIResponseDecodable>
 
@@ -49,6 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  Use `STPCustomerDeserializer` to convert a response from the Stripe API into an `STPCustomer` object. `STPCustomerDeserializer` expects the JSON response to be in the exact same format as the Stripe API.
+ TODO: deprecate
  */
 @interface STPCustomerDeserializer : NSObject
 
@@ -58,7 +60,6 @@ NS_ASSUME_NONNULL_BEGIN
  *  @param data        An `NSData` object representing encoded JSON for a Customer object
  *  @param urlResponse The URL response obtained from the `NSURLSessionTask`
  *  @param error       Any error that occurred from the URL session task (if this is non-nil, the `error` property will be set to this value after initialization).
- *
  */
 - (instancetype)initWithData:(nullable NSData *)data
                  urlResponse:(nullable NSURLResponse *)urlResponse
@@ -68,7 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
  *  Initializes a customer deserializer with a JSON dictionary. This JSON should be in the exact same format as what the Stripe API returns. If it's successfully parsed, the `customer` parameter will be present after initialization; otherwise `error` will be present.
  *
  *  @param json a JSON dictionary.
- *
  */
 - (instancetype)initWithJSONResponse:(id)json;
 

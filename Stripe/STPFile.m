@@ -71,6 +71,10 @@
 
 #pragma mark  - STPAPIResponseDecodable
 
++ (NSString *)object {
+    return @"file_upload";
+}
+
 + (NSArray *)requiredFields {
     return @[@"id", @"created", @"size", @"purpose", @"type"];
 }

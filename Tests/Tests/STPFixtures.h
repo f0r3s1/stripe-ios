@@ -52,15 +52,24 @@
 + (STPPaymentConfiguration *)paymentConfiguration;
 
 /**
- A stateless API adapter that always retrieves the same customer object.
+ A customer-scoped ephemeral key that expires in 100 seconds.
  */
-+ (id<STPBackendAPIAdapter>)staticAPIAdapter;
++ (STPEphemeralKey *)ephemeralKey;
 
 /**
- A stateless API adapter that always retrieves the given customer.
- selectDefaultSource and attachSource immediately call their completion blocks
- with nil.
+ A customer-scoped ephemeral key that expires in 10 seconds.
  */
-+ (id<STPBackendAPIAdapter>)staticAPIAdapterWithCustomer:(STPCustomer *)customer;
++ (STPEphemeralKey *)expiringEphemeralKey;
+
+/**
+ A stateless customer context that always retrieves the same customer object.
+ */
++ (STPCustomerContext *)staticCustomerContext;
+
+/**
+ A static customer context that always retrieves the given customer.
+ Selecting a default source and attaching a source have no effect.
+ */
++ (STPCustomerContext *)staticCustomerContextWithCustomer:(STPCustomer *)customer;
 
 @end
