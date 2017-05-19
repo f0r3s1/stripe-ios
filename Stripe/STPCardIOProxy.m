@@ -9,14 +9,71 @@
 #import "STPCardIOProxy.h"
 #import "STPCardParams.h"
 
-@interface STPCardIOSelectors : NSObject
-+ (id)initWithPaymentDelegate:id;
-+ (BOOL)canReadCardWithCamera;
-@property (nonatomic, strong) NSString *cardNumber;
-@property (nonatomic, assign, readwrite) BOOL collectExpiry;
-@property (nonatomic, assign, readwrite) BOOL collectCVV;
-@property (nonatomic, assign, readwrite) BOOL hideCardIOLogo;
+@protocol STPClassProxying
++ (Class)proxiedClass;
++ (BOOL)proxiedClassExists;
 @end
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wincomplete-implementation"
+@interface STPCardIOUtilitiesProxy : NSObject <STPClassProxying>
++ (BOOL)canReadCardWithCamera;
+@end
+
+@implementation STPCardIOUtilitiesProxy
++ (Class)proxiedClass {
+    return NSClassFromString(@"CardIOUtilities");
+}
++ (BOOL)proxiedClassExists {
+    Class proxiedClass = [self proxiedClass];
+    return proxiedClass && [proxiedClass respondsToSelector:@selector(canReadCardWithCamera)];
+}
+@end
+
+@interface STPCardIOCreditCardInfoProxy : NSObject <STPClassProxying>
+@property (nonatomic, strong) NSString *cardNumber;
+@property (nonatomic, assign, readwrite) NSUInteger expiryMonth;
+@property (nonatomic, assign, readwrite) NSUInteger expiryYear;
+@property (nonatomic, copy, readwrite) NSString *cvv;
+@end
+
+@implementation STPCardIOCreditCardInfoProxy
++ (Class)proxiedClass {
+    return NSClassFromString(@"CardIOCreditCardInfo");
+}
++ (BOOL)proxiedClassExists {
+    Class proxiedClass = [self proxiedClass];
+    return proxiedClass
+    && [proxiedClass instancesRespondToSelector:@selector(cardNumber)]
+    && [proxiedClass instancesRespondToSelector:@selector(expiryMonth)]
+    && [proxiedClass instancesRespondToSelector:@selector(expiryYear)]
+    && [proxiedClass instancesRespondToSelector:@selector(cvv)];
+}
+@end
+
+@interface STPCardIOPaymentViewControllerProxy : UIViewController <STPClassProxying>
++ (id)initWithPaymentDelegate:id;
+@property (nonatomic, assign, readwrite) BOOL hideCardIOLogo;
+@property (nonatomic, assign, readwrite) BOOL suppressScanConfirmation;
+@property (nonatomic, assign, readwrite) BOOL disableManualEntryButtons;
+@property (nonatomic, assign, readwrite) CGFloat scannedImageDuration;
+@end
+
+@implementation STPCardIOPaymentViewControllerProxy
++ (Class)proxiedClass {
+    return NSClassFromString(@"CardIOPaymentViewController");
+}
++ (BOOL)proxiedClassExists {
+    Class proxiedClass = [self proxiedClass];
+    return proxiedClass
+    && [proxiedClass instancesRespondToSelector:@selector(initWithPaymentDelegate:)]
+    && [proxiedClass instancesRespondToSelector:@selector(setHideCardIOLogo:)]
+    && [proxiedClass instancesRespondToSelector:@selector(setSuppressScanConfirmation:)]
+    && [proxiedClass instancesRespondToSelector:@selector(setDisableManualEntryButtons:)]
+    && [proxiedClass instancesRespondToSelector:@selector(setScannedImageDuration:)];
+}
+@end
+#pragma clang diagnostic pop
 
 @interface STPCardIOProxy ()
 @property (nonatomic, weak) id<STPCardIOProxyDelegate>delegate;
@@ -28,17 +85,10 @@
 #if TARGET_OS_SIMULATOR
     return NO;
 #else
-    Class kCardIOPaymentViewController = NSClassFromString(@"CardIOPaymentViewController");
-    Class kCardIOUtilities = NSClassFromString(@"CardIOUtilities");
-    Class kCardIOCreditCardInfo = NSClassFromString(@"CardIOCreditCardInfo");
-    if (kCardIOPaymentViewController != nil && kCardIOPaymentViewController != nil && kCardIOCreditCardInfo != nil
-        && [kCardIOPaymentViewController instancesRespondToSelector:@selector(initWithPaymentDelegate:)]
-        && [kCardIOPaymentViewController instancesRespondToSelector:@selector(setHideCardIOLogo:)]
-        && [kCardIOPaymentViewController instancesRespondToSelector:@selector(setCollectCVV:)]
-        && [kCardIOPaymentViewController instancesRespondToSelector:@selector(setCollectExpiry:)]
-        && [kCardIOCreditCardInfo instancesRespondToSelector:@selector(cardNumber)]
-        && [kCardIOUtilities respondsToSelector:@selector(canReadCardWithCamera)]) {
-        return [kCardIOUtilities canReadCardWithCamera];
+    if ([STPCardIOPaymentViewControllerProxy proxiedClassExists]
+        && [STPCardIOCreditCardInfoProxy proxiedClassExists]
+        && [STPCardIOUtilitiesProxy proxiedClassExists]) {
+        return [[STPCardIOUtilitiesProxy proxiedClass] canReadCardWithCamera];
     }
     return NO;
 #endif
@@ -53,11 +103,11 @@
 }
 
 - (void)presentCardIOFromViewController:(UIViewController *)viewController {
-    Class kCardIOPaymentViewController = NSClassFromString(@"CardIOPaymentViewController");
-    id cardIOViewController = [[kCardIOPaymentViewController alloc] initWithPaymentDelegate:self];
-    [cardIOViewController setHideCardIOLogo:YES];
-    [cardIOViewController setCollectCVV:NO];
-    [cardIOViewController setCollectExpiry:NO];
+    STPCardIOPaymentViewControllerProxy *cardIOViewController = [[[STPCardIOPaymentViewControllerProxy proxiedClass] alloc] initWithPaymentDelegate:self];
+    cardIOViewController.hideCardIOLogo = YES;
+    cardIOViewController.suppressScanConfirmation = YES;
+    cardIOViewController.disableManualEntryButtons = YES;
+    cardIOViewController.scannedImageDuration = 0;
     [viewController presentViewController:cardIOViewController animated:YES completion:nil];
 }
 
@@ -65,10 +115,13 @@
     [scanViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)userDidProvideCreditCardInfo:(id)info inPaymentViewController:(UIViewController *)scanViewController {
+- (void)userDidProvideCreditCardInfo:(STPCardIOCreditCardInfoProxy *)info inPaymentViewController:(UIViewController *)scanViewController {
     [scanViewController dismissViewControllerAnimated:YES completion:^{
         STPCardParams *cardParams = [STPCardParams new];
-        cardParams.number = [info cardNumber];
+        cardParams.number = info.cardNumber;
+        cardParams.expMonth = info.expiryMonth;
+        cardParams.expYear = info.expiryYear;
+        cardParams.cvc = info.cvv;
         [self.delegate cardIOProxy:self didFinishWithCardParams:cardParams];
     }];
 }
