@@ -239,6 +239,7 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/CardIO.framework",
 			);
 			name = "Carthage Copy Frameworks";
 			outputPaths = (
