@@ -8,7 +8,7 @@
 
 #import "STPCustomerContext.h"
 
-#import "NSError+STPCustomerContext.h"
+#import "StripeError+Private.h"
 #import "STPAPIClient+Private.h"
 #import "STPCustomer.h"
 #import "STPEphemeralKey.h"

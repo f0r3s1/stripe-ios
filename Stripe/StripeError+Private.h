@@ -1,8 +1,8 @@
 //
-//  NSError+STPCustomerContext.h
+//  StripeError+Private.h
 //  Stripe
 //
-//  Created by Ben Guo on 5/18/17.
+//  Created by Ben Guo on 5/22/17.
 //  Copyright © 2017 Stripe, Inc. All rights reserved.
 //
 
