@@ -14,7 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  *  An `STPCustomer` represents a deserialized Customer object from the Stripe API. You can use `STPCustomerDeserializer` to convert a JSON response from the Stripe API into an `STPCustomer`.
- *  TODO: deprecate
  */
 @interface STPCustomer : NSObject <STPAPIResponseDecodable>
 
@@ -26,10 +25,13 @@ NS_ASSUME_NONNULL_BEGIN
  *  @param sources       All of the customer's payment sources. This might be an empty array.
  *
  *  @return an instance of STPCustomer
+ *
+ *  @deprecated Use `STPCustomerContext` to manage retrieving and updating a 
+ *  Customer. You will no longer need to initialize an `STPCustomer`.
  */
 + (instancetype)customerWithStripeID:(NSString *)stripeID
                        defaultSource:(nullable id<STPSourceProtocol>)defaultSource
-                             sources:(NSArray<id<STPSourceProtocol>> *)sources;
+                             sources:(NSArray<id<STPSourceProtocol>> *)sources __attribute__((deprecated));
 
 /**
  *  The Stripe ID of the customer, e.g. `cus_1234`
@@ -50,7 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  Use `STPCustomerDeserializer` to convert a response from the Stripe API into an `STPCustomer` object. `STPCustomerDeserializer` expects the JSON response to be in the exact same format as the Stripe API.
- TODO: deprecate
  */
 @interface STPCustomerDeserializer : NSObject
 
@@ -60,17 +61,23 @@ NS_ASSUME_NONNULL_BEGIN
  *  @param data        An `NSData` object representing encoded JSON for a Customer object
  *  @param urlResponse The URL response obtained from the `NSURLSessionTask`
  *  @param error       Any error that occurred from the URL session task (if this is non-nil, the `error` property will be set to this value after initialization).
+ *
+ *  @deprecated Use `STPCustomerContext` to manage retrieving and updating a
+ *  Customer. You will no longer need to deserialize an `STPCustomer`.
  */
 - (instancetype)initWithData:(nullable NSData *)data
                  urlResponse:(nullable NSURLResponse *)urlResponse
-                       error:(nullable NSError *)error;
+                       error:(nullable NSError *)error __attribute__((deprecated));
 
 /**
  *  Initializes a customer deserializer with a JSON dictionary. This JSON should be in the exact same format as what the Stripe API returns. If it's successfully parsed, the `customer` parameter will be present after initialization; otherwise `error` will be present.
  *
  *  @param json a JSON dictionary.
+ *
+ *  @deprecated Use `STPCustomerContext` to manage retrieving and updating a
+ *  Customer. You will no longer need to deserialize an `STPCustomer`.
  */
-- (instancetype)initWithJSONResponse:(id)json;
+- (instancetype)initWithJSONResponse:(id)json __attribute__((deprecated));
 
 /**
  *  If a customer was successfully parsed from the response, it will be set here. Otherwise, this value wil be nil (and the `error` property will explain what went wrong).
