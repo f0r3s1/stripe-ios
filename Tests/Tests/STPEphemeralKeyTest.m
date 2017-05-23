@@ -20,6 +20,12 @@
     NSDictionary *json = [STPTestUtils jsonNamed:@"EphemeralKey"];
     STPEphemeralKey *key = [STPEphemeralKey decodedObjectFromAPIResponse:json];
     XCTAssertNotNil(key);
+    XCTAssertEqualObjects(key.stripeID, json[@"id"]);
+    XCTAssertEqualObjects(key.secret, json[@"secret"]);
+    XCTAssertEqualObjects(key.created, [NSDate dateWithTimeIntervalSince1970:[json[@"created"] doubleValue]]);
+    XCTAssertEqualObjects(key.expires, [NSDate dateWithTimeIntervalSince1970:[json[@"expires"] doubleValue]]);
+    XCTAssertEqual(key.livemode, [json[@"livemode"] boolValue]);
+    XCTAssertEqualObjects(key.customerID, @"cus_123");
 }
 
 @end

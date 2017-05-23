@@ -8,6 +8,7 @@
 
 #import "STPFixtures.h"
 #import "STPTestUtils.h"
+#import "STPEphemeralKey.h"
 
 @implementation STPFixtures
 

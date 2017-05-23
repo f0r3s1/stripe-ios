@@ -9,6 +9,8 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
 #import <Stripe/Stripe.h>
+#import "STPEphemeralKey.h"
+#import "STPEphemeralKeyManager.h"
 #import "STPFixtures.h"
 
 @interface STPEphemeralKeyManager (Testing)
@@ -29,15 +31,15 @@
     self.apiVersion = @"2015-03-03";
 }
 
-- (id)mockKeyProviderWithKey:(STPEphemeralKey *)key {
+- (id)mockKeyProviderWithKeyResponse:(NSDictionary *)keyResponse {
     XCTestExpectation *exp = [self expectationWithDescription:@"createCustomerKey"];
     id mockKeyProvider = OCMProtocolMock(@protocol(STPEphemeralKeyProvider));
     OCMStub([mockKeyProvider createCustomerKeyWithAPIVersion:[OCMArg isEqual:self.apiVersion]
                                                   completion:[OCMArg any]])
     .andDo(^(NSInvocation *invocation) {
-        STPEphemeralKeyCompletionBlock completion;
+        STPJSONResponseCompletionBlock completion;
         [invocation getArgument:&completion atIndex:3];
-        completion(key, nil);
+        completion(keyResponse, nil);
         [exp fulfill];
     });
     return mockKeyProvider;
@@ -45,7 +47,8 @@
 
 - (void)testGetCustomerKeyCreatesNewKeyAfterInit {
     STPEphemeralKey *expectedKey = [STPFixtures ephemeralKey];
-    id mockKeyProvider = [self mockKeyProviderWithKey:expectedKey];
+    NSDictionary *keyResponse = [expectedKey allResponseFields];
+    id mockKeyProvider = [self mockKeyProviderWithKeyResponse:keyResponse];
     STPEphemeralKeyManager *sut = [[STPEphemeralKeyManager alloc] initWithKeyProvider:mockKeyProvider apiVersion:self.apiVersion];
     XCTestExpectation *exp = [self expectationWithDescription:@"getCustomerKey"];
     [sut getCustomerKey:^(STPEphemeralKey *resourceKey, NSError *error) {
@@ -73,7 +76,8 @@
 
 - (void)testGetCustomerKeyCreatesNewKeyIfExpiring {
     STPEphemeralKey *expectedKey = [STPFixtures ephemeralKey];
-    id mockKeyProvider = [self mockKeyProviderWithKey:expectedKey];
+    NSDictionary *keyResponse = [expectedKey allResponseFields];
+    id mockKeyProvider = [self mockKeyProviderWithKeyResponse:keyResponse];
     STPEphemeralKeyManager *sut = [[STPEphemeralKeyManager alloc] initWithKeyProvider:mockKeyProvider apiVersion:self.apiVersion];
     sut.customerKey = [STPFixtures expiringEphemeralKey];
     XCTestExpectation *exp = [self expectationWithDescription:@"retrieve"];
@@ -86,7 +90,9 @@
 }
 
 - (void)testEnterForegroundRefreshesResourceKeyIfExpiring {
-    id mockKeyProvider = [self mockKeyProviderWithKey:[STPFixtures expiringEphemeralKey]];
+    STPEphemeralKey *key = [STPFixtures expiringEphemeralKey];
+    NSDictionary *keyResponse = [key allResponseFields];
+    id mockKeyProvider = [self mockKeyProviderWithKeyResponse:keyResponse];
     STPEphemeralKeyManager *sut = [[STPEphemeralKeyManager alloc] initWithKeyProvider:mockKeyProvider apiVersion:self.apiVersion];
     XCTAssertNotNil(sut);
     [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationWillEnterForegroundNotification object:nil];

@@ -461,7 +461,7 @@ static NSString *const stripeAPIVersion = @"2015-10-12";
 @implementation STPAPIClient (Customers)
 
 + (STPAPIClient *)apiClientWithEphemeralKey:(STPEphemeralKey *)key {
-    STPAPIClient *client = [[STPAPIClient alloc] init];
+    STPAPIClient *client = [[self alloc] init];
     client.apiKey = key.secret;
     return client;
 }

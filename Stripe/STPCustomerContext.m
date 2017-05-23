@@ -47,18 +47,15 @@ static NSTimeInterval const DefaultCachedCustomerMaxAge = 60;
     self = [super init];
     if (self) {
         _cachedCustomerMaxAge = DefaultCachedCustomerMaxAge;
-        self.keyManager = keyManager;
+        _keyManager = keyManager;
+        [self retrieveCustomer:nil];
     }
     return self;
 }
 
 - (void)setKeyProvider:(id<STPEphemeralKeyProvider>)keyProvider {
-    self.keyManager = [[STPEphemeralKeyManager alloc] initWithKeyProvider:keyProvider
-                                                               apiVersion:[STPAPIClient apiVersion]];
-}
-
-- (void)setKeyManager:(STPEphemeralKeyManager *)keyManager {
-    _keyManager = keyManager;
+    _keyManager = [[STPEphemeralKeyManager alloc] initWithKeyProvider:keyProvider
+                                                           apiVersion:[STPAPIClient apiVersion]];
     [self retrieveCustomer:nil];
 }
 
