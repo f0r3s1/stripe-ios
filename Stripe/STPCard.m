@@ -151,7 +151,8 @@
 }
 
 #pragma mark STPAPIResponseDecodable
-+ (NSString *)object {
+
+- (NSString *)stripeObject {
     return @"card";
 }
 

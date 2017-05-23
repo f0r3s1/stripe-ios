@@ -15,6 +15,7 @@
 
 @interface STPCustomerContext (Testing)
 
+@property (nonatomic) STPCustomer *customer;
 @property (nonatomic) NSDate *customerRetrievedDate;
 
 - (instancetype)initWithKeyManager:(STPEphemeralKeyManager *)keyManager;
@@ -161,8 +162,11 @@
         [exp fulfill];
     });
     STPCustomerContext *sut = [[STPCustomerContext alloc] initWithKeyManager:mockKeyManager];
+    sut.customer = [STPFixtures customerWithSingleCardTokenSource];
     XCTestExpectation *exp2 = [self expectationWithDescription:@"attachSource"];
     [sut attachSourceToCustomer:expectedSource completion:^(NSError *error) {
+        // attaching a source should clear the cached customer
+        XCTAssertNil(sut.customer); 
         XCTAssertNil(error);
         [exp2 fulfill];
     }];

@@ -9,10 +9,13 @@
 #import "STPAPIRequest.h"
 
 #import "NSMutableURLRequest+Stripe.h"
+#import "STPInternalAPIResponseDecodable.h"
 #import "STPAPIClient+Private.h"
 #import "STPAPIClient.h"
+#import "STPCard+Private.h"
 #import "STPDispatchFunctions.h"
 #import "STPFormEncoder.h"
+#import "STPSource+Private.h"
 #import "StripeError.h"
 
 @implementation STPAPIRequest
@@ -92,7 +95,8 @@
         NSString *object = jsonDictionary[@"object"];
         Class serializerClass = [serializers.firstObject class];
         for (id<STPAPIResponseDecodable> serializer in serializers) {
-            if ([[serializer.class object] isEqualToString:object]) {
+            if ([serializer respondsToSelector:@selector(stripeObject)]
+                && [[(id<STPInternalAPIResponseDecodable>)serializer stripeObject] isEqualToString:object]) {
                 serializerClass = [serializer class];
             }
         }

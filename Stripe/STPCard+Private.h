@@ -7,7 +7,8 @@
 //
 
 #import "STPCard.h"
+#import "STPInternalAPIResponseDecodable.h"
 
-@interface STPCard (Private)
+@interface STPCard (Private) <STPInternalAPIResponseDecodable>
 - (nullable STPAddress *)address;
 @end

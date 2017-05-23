@@ -24,10 +24,6 @@
 
 @implementation STPEphemeralKey
 
-+ (NSString *)object {
-    return @"ephemeral_key";
-}
-
 + (NSArray *)requiredFields {
     return @[@"id", @"created", @"livemode", @"secret", @"expires", @"associated_objects"];
 }

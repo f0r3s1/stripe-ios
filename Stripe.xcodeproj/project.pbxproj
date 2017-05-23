@@ -544,6 +544,8 @@
 		C1C02CCE1ECCE92900DF5643 /* STPEphemeralKeyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C1C02CCD1ECCE92900DF5643 /* STPEphemeralKeyTest.m */; };
 		C1C1012D1E57A26F00C7BFAE /* STPSource+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = C1C1012C1E57A26F00C7BFAE /* STPSource+Private.h */; };
 		C1C1012E1E57A26F00C7BFAE /* STPSource+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = C1C1012C1E57A26F00C7BFAE /* STPSource+Private.h */; };
+		C1CFCB671ED4E38900BE45DF /* STPInternalAPIResponseDecodable.h in Headers */ = {isa = PBXBuildFile; fileRef = C1CFCB661ED4E38900BE45DF /* STPInternalAPIResponseDecodable.h */; };
+		C1CFCB681ED4E38900BE45DF /* STPInternalAPIResponseDecodable.h in Headers */ = {isa = PBXBuildFile; fileRef = C1CFCB661ED4E38900BE45DF /* STPInternalAPIResponseDecodable.h */; };
 		C1D23FAD1D37F81F002FD83C /* STPCustomerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C1D23FAC1D37F81F002FD83C /* STPCustomerTest.m */; };
 		C1D7B51A1E36B8B9002181F5 /* STPSourceParams.h in Headers */ = {isa = PBXBuildFile; fileRef = C1D7B5181E36B8B9002181F5 /* STPSourceParams.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C1D7B51B1E36B8B9002181F5 /* STPSourceParams.h in Headers */ = {isa = PBXBuildFile; fileRef = C1D7B5181E36B8B9002181F5 /* STPSourceParams.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1091,6 +1093,7 @@
 		C1C02CCA1ECCD0E500DF5643 /* EphemeralKey.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = EphemeralKey.json; sourceTree = "<group>"; };
 		C1C02CCD1ECCE92900DF5643 /* STPEphemeralKeyTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STPEphemeralKeyTest.m; sourceTree = "<group>"; };
 		C1C1012C1E57A26F00C7BFAE /* STPSource+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "STPSource+Private.h"; sourceTree = "<group>"; };
+		C1CFCB661ED4E38900BE45DF /* STPInternalAPIResponseDecodable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STPInternalAPIResponseDecodable.h; sourceTree = "<group>"; };
 		C1D23FAC1D37F81F002FD83C /* STPCustomerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STPCustomerTest.m; sourceTree = "<group>"; };
 		C1D23FAF1D37FC90002FD83C /* STPTestUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STPTestUtils.h; sourceTree = "<group>"; };
 		C1D23FB01D37FC90002FD83C /* STPTestUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STPTestUtils.m; sourceTree = "<group>"; };
@@ -1734,6 +1737,7 @@
 				C18410751EC2529400178149 /* STPEphemeralKeyManager.m */,
 				04CDB4C41A5F30A700B854EE /* STPFormEncoder.h */,
 				04CDB4C51A5F30A700B854EE /* STPFormEncoder.m */,
+				C1CFCB661ED4E38900BE45DF /* STPInternalAPIResponseDecodable.h */,
 				F1D3A2471EB012010095BFA9 /* STPMultipartFormDataEncoder.h */,
 				F1D3A2481EB012010095BFA9 /* STPMultipartFormDataEncoder.m */,
 				F1D3A2491EB012010095BFA9 /* STPMultipartFormDataPart.h */,
@@ -2087,6 +2091,7 @@
 				C1D7B51B1E36B8B9002181F5 /* STPSourceParams.h in Headers */,
 				04F94DC11D22A0B0004FC826 /* STPCheckoutAPIVerification.h in Headers */,
 				04B31DFA1D11AC6400EF1631 /* STPUserInformation.h in Headers */,
+				C1CFCB681ED4E38900BE45DF /* STPInternalAPIResponseDecodable.h in Headers */,
 				045D71081CEED3AA00F6CD65 /* STPRememberMeEmailCell.h in Headers */,
 				C113D21A1EBB9A36006FACC2 /* STPEphemeralKey.h in Headers */,
 				04A4C38E1C4F25F900B3B290 /* UIViewController+Stripe_ParentViewController.h in Headers */,
@@ -2165,6 +2170,7 @@
 				C1BD9B221E393FFE00CEE925 /* STPSourceReceiver.h in Headers */,
 				04F213311BCEAB61001D6F22 /* STPFormEncodable.h in Headers */,
 				04CDB5021A5F30A700B854EE /* STPFormEncoder.h in Headers */,
+				C1CFCB671ED4E38900BE45DF /* STPInternalAPIResponseDecodable.h in Headers */,
 				04695ADB1C77F9EF00E08063 /* STPPhoneNumberValidator.h in Headers */,
 				F1C7B8D51DBECF2400D9F6F0 /* STPDispatchFunctions.h in Headers */,
 				0426B9761CEBD001006AC8DD /* UINavigationBar+Stripe_Theme.h in Headers */,

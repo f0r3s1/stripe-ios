@@ -61,7 +61,7 @@ static NSTimeInterval const DefaultCachedCustomerMaxAge = 60;
 
 - (void)setCustomer:(STPCustomer *)customer {
     _customer = customer;
-    _customerRetrievedDate = [NSDate date];
+    _customerRetrievedDate = (customer) ? [NSDate date] : nil;
 }
 
 - (BOOL)shouldUseCachedCustomer {
@@ -116,6 +116,7 @@ static NSTimeInterval const DefaultCachedCustomerMaxAge = 60;
         [STPAPIClient addSource:source.stripeID
              toCustomerUsingKey:ephemeralKey
                      completion:^(__unused id<STPSourceProtocol> object, NSError *error) {
+                         self.customer = nil;
                          if (completion) {
                              completion(error);
                          }

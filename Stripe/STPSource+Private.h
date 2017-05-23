@@ -7,8 +7,9 @@
 //
 
 #import "STPSource.h"
+#import "STPInternalAPIResponseDecodable.h"
 
-@interface STPSource (Private)
+@interface STPSource (Private) <STPInternalAPIResponseDecodable>
 + (NSString *)stringFromType:(STPSourceType)type;
 + (STPSourceType)typeFromString:(NSString *)string;
 + (NSString *)stringFromFlow:(STPSourceFlow)flow;

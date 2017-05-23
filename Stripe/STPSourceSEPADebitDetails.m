@@ -16,10 +16,6 @@
 
 @implementation STPSourceSEPADebitDetails
 
-+ (NSString *)object {
-    return nil;
-}
-
 + (NSArray *)requiredFields {
     return @[];
 }

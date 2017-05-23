@@ -70,10 +70,6 @@
 
 #pragma mark STPAPIResponseDecodable
 
-+ (NSString *)object {
-    return @"token";
-}
-
 + (NSArray *)requiredFields {
     return @[@"id", @"livemode", @"created"];
 }

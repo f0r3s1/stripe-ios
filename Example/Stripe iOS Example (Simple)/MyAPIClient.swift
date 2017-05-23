@@ -40,8 +40,8 @@ class MyAPIClient: NSObject, STPEphemeralKeyProvider {
     }
 
     func createCustomerKey(withAPIVersion apiVersion: String, completion: @escaping STPJSONResponseCompletionBlock) {
-        let url = URL(string: "https://bg-stripe.runkit.io/591e05608ca4980012451c55/branches/master/ephemeral_keys")!
-        Alamofire.request(url, method: .get, parameters: [
+        let url = self.baseURL.appendingPathComponent("ephemeral_keys")
+        Alamofire.request(url, method: .post, parameters: [
             "api_version": apiVersion
             ])
             .validate(statusCode: 200..<300)
