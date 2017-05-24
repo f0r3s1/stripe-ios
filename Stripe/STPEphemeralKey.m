@@ -55,6 +55,10 @@
     return key;
 }
 
+- (NSUInteger)hash {
+    return [self.stripeID hash];
+}
+
 - (BOOL)isEqual:(id)object {
     if (self == object) {
         return YES;

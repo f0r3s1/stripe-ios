@@ -30,28 +30,22 @@
 
 - (id)mockKeyManagerWithKey:(STPEphemeralKey *)ephemeralKey {
     id mockKeyManager = OCMClassMock([STPEphemeralKeyManager class]);
-    XCTestExpectation *exp = [self expectationWithDescription:@"getCustomerKey"];
-    exp.assertForOverFulfill = NO;
     OCMStub([mockKeyManager getCustomerKey:[OCMArg any]])
     .andDo(^(NSInvocation *invocation) {
         STPEphemeralKeyCompletionBlock completion;
         [invocation getArgument:&completion atIndex:2];
         completion(ephemeralKey, nil);
-        [exp fulfill];
     });
     return mockKeyManager;
 }
 
 - (id)mockKeyManagerWithError:(NSError *)error {
     id mockKeyManager = OCMClassMock([STPEphemeralKeyManager class]);
-    XCTestExpectation *exp = [self expectationWithDescription:@"getCustomerKey"];
-    exp.assertForOverFulfill = NO;
     OCMStub([mockKeyManager getCustomerKey:[OCMArg any]])
     .andDo(^(NSInvocation *invocation) {
         STPEphemeralKeyCompletionBlock completion;
         [invocation getArgument:&completion atIndex:2];
         completion(nil, error);
-        [exp fulfill];
     });
     return mockKeyManager;
 }
@@ -61,10 +55,12 @@
     id mockKeyManager = [self mockKeyManagerWithError:expectedError];
     id mockAPIClient = OCMClassMock([STPAPIClient class]);
     OCMReject([mockAPIClient retrieveCustomerUsingKey:[OCMArg any] completion:[OCMArg any]]);
+    XCTestExpectation *exp = [self expectationWithDescription:@"retrieveCustomer"];
     STPCustomerContext *sut = [[STPCustomerContext alloc] initWithKeyManager:mockKeyManager];
     [sut retrieveCustomer:^(STPCustomer *customer, NSError *error) {
         XCTAssertNil(customer);
         XCTAssertEqualObjects(error, expectedError);
+        [exp fulfill];
     }];
 
     [self waitForExpectationsWithTimeout:2 handler:nil];
